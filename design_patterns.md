@@ -79,7 +79,7 @@ class GuestServiceStrategy(ABC):
         pass
     
     @abstractmethod
-    def get_discount_percentage(self):
+    def get_discount_percentage(self, guest):
         """Get discount percentage for guest type"""
         pass
     
@@ -92,25 +92,28 @@ class VipGuestServiceStrategy(GuestServiceStrategy):
     """VIP service strategy - 20% discount + personal service"""
     
     def calculate_payment_per_installment(self, total_price, num_installments):
-        return total_price / num_installments
+        vip_price = total_price * 0.95  # Additional 5% VIP payment discount
+        return vip_price / num_installments
     
-    def get_discount_percentage(self):
+    def get_discount_percentage(self, guest):
         return 20.0
     
     def send_invoice(self, guest, invoice_text):
         return f"📧 Personal Assistant: Dear {guest.name}, your exclusive invoice:\n{invoice_text}"
 
 class MemberGuestServiceStrategy(GuestServiceStrategy):
-    """Member service strategy - 15% discount + loyalty points"""
+    """Member service strategy - points-based discount (10%-25%) + loyalty points"""
     
     def calculate_payment_per_installment(self, total_price, num_installments):
-        return total_price / num_installments
+        member_price = total_price * 0.98  # Additional 2% member payment discount
+        return member_price / num_installments
     
-    def get_discount_percentage(self):
-        return 15.0
+    def get_discount_percentage(self, guest):
+        # 10% base + points/10, capped at 25%
+        return min(25.0, 10.0 + guest.points // 10)
     
     def send_invoice(self, guest, invoice_text):
-        return f"📱 Member App: Hi {guest.name}! +50 loyalty points earned!\n{invoice_text}"
+        return f"📱 Member App: Hi {guest.name}! Current loyalty points: {guest.points}\n{invoice_text}"
 
 class RegularGuestServiceStrategy(GuestServiceStrategy):
     """Regular service strategy - basic service"""
@@ -118,7 +121,7 @@ class RegularGuestServiceStrategy(GuestServiceStrategy):
     def calculate_payment_per_installment(self, total_price, num_installments):
         return total_price / num_installments
     
-    def get_discount_percentage(self):
+    def get_discount_percentage(self, guest):
         return 0.0
     
     def send_invoice(self, guest, invoice_text):
@@ -241,10 +244,10 @@ payment_per_installment = service.calculate_payment_per_installment(
     total_price=total_price, 
     num_installments=3
 )
-# VIP: $500 per installment
+# VIP: $475 per installment (1500 * 0.95 / 3, with the 5% VIP payment discount)
 
 # Get discount
-discount_percentage = service.get_discount_percentage()
+discount_percentage = service.get_discount_percentage(guest)
 # VIP: 20%
 
 # Calculate final price after discount
