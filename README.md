@@ -71,16 +71,28 @@ No external dependencies required (uses Python standard library only)
 
 # Installation
 
-Clone or download the project
-Navigate to the project directory
-Run the main application:
+Clone the repository, enter the project directory, and run the application:
 
-bashpython main.py
+```bash
+git clone https://github.com/Abraheem2010/HotelManagementSystem.git
+cd HotelManagementSystem
+python main.py
+```
+
+That's it — no dependencies to install. To run the test suite:
+
+```bash
+python -m unittest discover -s test_hms -p "test*.py"
+```
+
 ## Data Files (Auto-Generated)
-The system automatically creates and manages:
+The system automatically creates and manages these files on first run
+(they are intentionally excluded from version control via .gitignore):
+```
 rooms.json          # Room inventory and status
 guests.json         # Guest profiles and loyalty points
 bookings.json       # Reservations and transaction history
+```
 First Steps
 
 Add Rooms - Set up your hotel inventory with different types and prices
